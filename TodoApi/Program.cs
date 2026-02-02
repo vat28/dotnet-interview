@@ -1,4 +1,5 @@
 using Microsoft.Data.Sqlite;
+using TodoApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Register repository and service
+// Scoped is appropriate for DB-backed services in web apps.
+builder.Services.AddScoped<ITodoRepository, TodoRepository>();
+builder.Services.AddScoped<ITodoService, TodoService>();
 
 var app = builder.Build();
 
@@ -45,5 +51,5 @@ void InitializeDatabase()
     ";
     command.ExecuteNonQuery();
 
-    Console.WriteLine("Database initialized successfully");
+    Console.WriteLine(\"Database initialized successfully\");
 }
