@@ -14,7 +14,25 @@ _Describe the issues you found in the original implementation. Consider aspects 
 - Performance concerns
 - Testing gaps
 
-[Your analysis here]
+Tight coupling and poor DI:
+Controllers create TodoService instances directly rather than receiving services via dependency injection.
+SQL and security problems:
+SQL is built with string interpolation (SQL injection risk).
+No parameterized queries or prepared statements.
+Synchronous/blocking I/O:
+Database operations are synchronous. Modern ASP.NET apps should use async DB calls to avoid blocking thread pool.
+Poor separation of concerns:
+Program.cs handles DB initialization inline. Consider moving DB/schema responsibilities to a repository/initializer.
+Controller API design:
+All endpoints use POST and custom route names instead of RESTful verbs and routes (POST/GET/PUT/DELETE + /api/todos).
+Request DTOs are defined inside controller file; better to use separate DTO classes and model validation attributes.
+Error handling and logging:
+Very generic exception handling returning ex.Message — leaks implementation details; no structured logging.
+Tests are brittle and integration-style:
+Unit tests use the real TodoService and real DB file; tests are not isolated or repeatable.
+Tests rely on state in the shared file-based DB (no setup/teardown or in-memory alternative).
+Data access layer:
+No repository/ORM abstraction. Manually using low-level SQLite APIs increases chance of bugs and repeated code.
 
 ---
 
@@ -26,7 +44,10 @@ _Explain the architecture you chose and why. Consider:_
 - Technology choices
 - Separation of concerns
 
-[Your decisions here]
+Add interfaces and DTOs (done: ITodoService)
+Add ITodoService, add ITodoRepository interface for data access.
+Add request/response DTOs in a separate folder (Dtos/).
+Add typed options for DB connection string in appsettings.
 
 ---
 
